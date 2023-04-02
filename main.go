@@ -48,14 +48,26 @@ func main() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
+	var (
+		translateModeSentence = "sentence"
+		translateModePhrase   = "phrase"
+		translateModeWord     = "word"
+		translate             = ""
+	)
+
 	_, _ = bot.Request(tgbotapi.NewSetMyCommands([]tgbotapi.BotCommand{
 		{
-			Command:     "help",
-			Description: "Get help",
-		},
-		{
 			Command:     "new",
-			Description: "Clear context and start a new conversation",
+			Description: "restart",
+		}, {
+			Command:     translateModeSentence,
+			Description: translateModeSentence,
+		}, {
+			Command:     translateModePhrase,
+			Description: translateModePhrase,
+		}, {
+			Command:     translateModeWord,
+			Description: translateModeWord,
 		},
 	}...))
 
@@ -119,13 +131,13 @@ func main() {
 
 			// Extract the command from the Message.
 			switch update.Message.Command() {
-			case "start":
-				msg.Text = "Welcome to ChatGPT bot! Write something to start a conversation. Use /new to clear context and start a new conversation."
-			case "help":
-				msg.Text = "Write something to start a conversation. Use /new to clear context and start a new conversation."
 			case "new":
+				translate = ""
 				resetUser(update.Message.From.ID)
 				msg.Text = "OK, let's start a new conversation."
+			case translateModeSentence, translateModePhrase, translateModeWord:
+				translate = update.Message.Command()
+				msg.Text = fmt.Sprintf("translate %s", translate)
 			default:
 				msg.Text = "I don't know that command"
 			}
@@ -134,7 +146,15 @@ func main() {
 				log.Print(err)
 			}
 		} else {
-			answerText, contextTrimmed, err := handleUserPrompt(update.Message.From.ID, update.Message.Text)
+			questionText := update.Message.Text
+			if translate == translateModeSentence {
+				questionText = fmt.Sprintf("%s 这句话怎么用英语口语化表达， 给几个例子", questionText)
+			} else if translate == translateModePhrase {
+				questionText = fmt.Sprintf("%s 怎么用英语口语化表达， 给几个例子", questionText)
+			} else if translate == translateModeWord {
+				questionText = fmt.Sprintf("%s 的口语化英语和正式英语是什么", questionText)
+			}
+			answerText, contextTrimmed, err := handleUserPrompt(update.Message.From.ID, questionText)
 			if err != nil {
 				log.Print(err)
 
