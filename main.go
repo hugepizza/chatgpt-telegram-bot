@@ -52,6 +52,7 @@ func main() {
 		translateModeSentence = "sentence"
 		translateModePhrase   = "phrase"
 		translateModeWord     = "word"
+		translateModeE2C      = "e2c"
 		translate             = ""
 	)
 
@@ -153,6 +154,8 @@ func main() {
 				questionText = fmt.Sprintf("%s 怎么用英语口语化表达， 给几个例子", questionText)
 			} else if translate == translateModeWord {
 				questionText = fmt.Sprintf("%s 的口语化英语和正式英语是什么", questionText)
+			} else if translate == translateModeE2C {
+				questionText = fmt.Sprintf("%s 把这段英文翻译成中文并指出其中的语法和拼写错误", questionText)
 			}
 			answerText, contextTrimmed, err := handleUserPrompt(update.Message.From.ID, questionText)
 			if err != nil {
