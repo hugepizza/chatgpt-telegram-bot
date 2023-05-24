@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +11,6 @@ import (
 
 	"github.com/caarlos0/env/v7"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	gogpt "github.com/sashabaranov/go-gpt3"
 )
 
 var cfg struct {
@@ -23,15 +21,6 @@ var cfg struct {
 	ConversationIdleTimeoutSeconds      int     `env:"CONVERSATION_IDLE_TIMEOUT_SECONDS" envDefault:"900"`
 	NotifyUserOnConversationIdleTimeout bool    `env:"NOTIFY_USER_ON_CONVERSATION_IDLE_TIMEOUT" envDefault:"false"`
 }
-
-type User struct {
-	TelegramID     int64
-	LastActiveTime time.Time
-	HistoryMessage []gogpt.ChatCompletionMessage
-	LatestMessage  tgbotapi.Message
-}
-
-var users = make(map[int64]*User)
 
 func main() {
 	if err := env.Parse(&cfg); err != nil {
@@ -48,27 +37,10 @@ func main() {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	var (
-		translateModeSentence = "sentence"
-		translateModePhrase   = "phrase"
-		translateModeWord     = "word"
-		translateModeE2C      = "e2c"
-		translate             = ""
-	)
-
 	_, _ = bot.Request(tgbotapi.NewSetMyCommands([]tgbotapi.BotCommand{
 		{
 			Command:     "new",
 			Description: "restart",
-		}, {
-			Command:     translateModeSentence,
-			Description: translateModeSentence,
-		}, {
-			Command:     translateModePhrase,
-			Description: translateModePhrase,
-		}, {
-			Command:     translateModeWord,
-			Description: translateModeWord,
 		},
 	}...))
 
@@ -133,14 +105,10 @@ func main() {
 			// Extract the command from the Message.
 			switch update.Message.Command() {
 			case "new":
-				translate = ""
 				resetUser(update.Message.From.ID)
 				msg.Text = "OK, let's start a new conversation."
-			case translateModeSentence, translateModePhrase, translateModeWord:
-				translate = update.Message.Command()
-				msg.Text = fmt.Sprintf("translate %s", translate)
 			default:
-				msg.Text = "I don't know that command"
+				msg.Text = "I don't know this command."
 			}
 
 			if _, err := bot.Send(msg); err != nil {
@@ -148,19 +116,20 @@ func main() {
 			}
 		} else {
 			questionText := update.Message.Text
-			if translate == translateModeSentence {
-				questionText = fmt.Sprintf("%s 这句话怎么用英语口语化表达， 给几个例子", questionText)
-			} else if translate == translateModePhrase {
-				questionText = fmt.Sprintf("%s 怎么用英语口语化表达， 给几个例子", questionText)
-			} else if translate == translateModeWord {
-				questionText = fmt.Sprintf("%s 的口语化英语和正式英语是什么", questionText)
-			} else if translate == translateModeE2C {
-				questionText = fmt.Sprintf("%s 把这段英文翻译成中文并指出其中的语法和拼写错误", questionText)
+			voice := false
+			if update.Message.Voice != nil || update.Message.Voice.FileID != "" {
+				questionText, _, err = a2t(bot, update.Message.Voice.FileID)
+				if err != nil {
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Failed to trans audio to text")
+					_, _ = bot.Send(msg)
+					continue
+				}
+				voice = true
 			}
+
 			answerText, contextTrimmed, err := handleUserPrompt(update.Message.From.ID, questionText)
 			if err != nil {
 				log.Print(err)
-
 				err = send(bot, tgbotapi.NewMessage(update.Message.Chat.ID, err.Error()))
 				if err != nil {
 					log.Print(err)
@@ -169,6 +138,9 @@ func main() {
 				err = send(bot, tgbotapi.NewMessage(update.Message.Chat.ID, answerText))
 				if err != nil {
 					log.Print(err)
+				}
+				if voice {
+					// return a voice
 				}
 
 				if contextTrimmed {
@@ -191,58 +163,6 @@ func send(bot *tgbotapi.BotAPI, c tgbotapi.Chattable) error {
 	}
 
 	return err
-}
-
-func handleUserPrompt(userID int64, msg string) (string, bool, error) {
-	clearUserContextIfExpires(userID)
-
-	if _, ok := users[userID]; !ok {
-		users[userID] = &User{
-			TelegramID:     userID,
-			LastActiveTime: time.Now(),
-			HistoryMessage: []gogpt.ChatCompletionMessage{},
-		}
-	}
-
-	users[userID].HistoryMessage = append(users[userID].HistoryMessage, gogpt.ChatCompletionMessage{
-		Role:    "user",
-		Content: msg,
-	})
-	users[userID].LastActiveTime = time.Now()
-
-	c := gogpt.NewClient(os.Getenv("OPENAI_API_KEY"))
-	ctx := context.Background()
-
-	req := gogpt.ChatCompletionRequest{
-		Model:       gogpt.GPT3Dot5Turbo,
-		Temperature: cfg.ModelTemperature,
-		TopP:        1,
-		N:           1,
-		// PresencePenalty:  0.2,
-		// FrequencyPenalty: 0.2,
-		Messages: users[userID].HistoryMessage,
-	}
-
-	fmt.Println(req)
-
-	resp, err := c.CreateChatCompletion(ctx, req)
-	if err != nil {
-		log.Print(err)
-		users[userID].HistoryMessage = users[userID].HistoryMessage[:len(users[userID].HistoryMessage)-1]
-		return "", false, err
-	}
-
-	answer := resp.Choices[0].Message
-
-	users[userID].HistoryMessage = append(users[userID].HistoryMessage, answer)
-
-	var contextTrimmed bool
-	if resp.Usage.TotalTokens > 3500 {
-		users[userID].HistoryMessage = users[userID].HistoryMessage[1:]
-		contextTrimmed = true
-	}
-
-	return answer.Content, contextTrimmed, nil
 }
 
 func clearUserContextIfExpires(userID int64) bool {

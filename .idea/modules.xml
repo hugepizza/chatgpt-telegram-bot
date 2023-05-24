@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/chatgpt-telegram-bot.iml" filepath="$PROJECT_DIR$/.idea/chatgpt-telegram-bot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../go-openai/.idea/go-openai.iml" filepath="$PROJECT_DIR$/../go-openai/.idea/go-openai.iml" />
     </modules>
   </component>
 </project>
