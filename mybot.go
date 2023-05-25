@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/caarlos0/env/v7"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	gogpt "github.com/sashabaranov/go-gpt3"
 	"github.com/sashabaranov/go-openai"
 	"github.com/u2takey/go-utils/uuid"
 	"google.golang.org/api/option"
@@ -249,7 +248,7 @@ func (bot *MyBot) handleUserPrompt(userID int64, msg string) (string, bool, erro
 	ctx := context.Background()
 
 	req := openai.ChatCompletionRequest{
-		Model:       gogpt.GPT3Dot5Turbo,
+		Model:       openai.GPT4,
 		Temperature: cfg.ModelTemperature,
 		TopP:        1,
 		N:           1,
