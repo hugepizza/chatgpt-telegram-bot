@@ -248,7 +248,7 @@ func (bot *MyBot) handleUserPrompt(userID int64, msg string) (string, bool, erro
 	ctx := context.Background()
 
 	req := openai.ChatCompletionRequest{
-		Model:       openai.GPT4,
+		Model:       openai.GPT3Dot5Turbo,
 		Temperature: cfg.ModelTemperature,
 		TopP:        1,
 		N:           1,
