@@ -2,6 +2,11 @@
 
 Run your own ChatGPT Telegram bot!
 
+Support voice message and return voice message (by google tts).
+
+chatGPT的Telegram机器人支持文字输入返回文字，语音输入返回语音，目前由谷歌文字转语音实现，需要ffmpeg。
+
+
 ## Setup
 
 1. Get your OpenAI API key
@@ -12,35 +17,19 @@ Run your own ChatGPT Telegram bot!
 
    Create a bot from Telegram [@BotFather](https://t.me/BotFather) and obtain an access token.
 
-3. Install using `go install`
+3. Get your google tts credentials file
 
-   If you have a Go environment, you can install it with the following command:
+4. Install using ffmpeg
 
-```bash
-go install github.com/leafduo/chatgpt-telegram-bot@latest
-```
-
-4. Install using binary
-
-   You can get prebuilt binaries from [GitHub Releases](https://github.com/leafduo/chatgpt-telegram-bot/releases) and put it in `$PATH`
-
-5. Install using Docker-compose
-
-   Check out [docker-compose.yml](docker-compose.yml) for sample config
-
-6. Set the environment variables and run
+5. Set the environment variables and run
 
 ```bash
 export OPENAI_API_KEY=<your_openai_api_key>
 export TELEGRAM_APITOKEN=<your_telegram_bot_token>
-# optional, default is empty. Only allow these users to use the bot. Empty means allow all users.
+
 export ALLOWED_TELEGRAM_ID=<your_telegram_id>,<your_friend_telegram_id>
-# optional, default is 1.0. Higher temperature means more random responses.
-# See https://platform.openai.com/docs/api-reference/chat/create#chat/create-temperature
-export MODEL_TEMPERATURE=1.0
-# optional, default is 900. Max idle duration for a certain conversation.
-# After this duration, a new conversation will be started.
-export CONVERSATION_IDLE_TIMEOUT_SECONDS=900
+
+export GOOGLE_TTS_Cert_File=<your_google_tts_cert_file_path>
 
 chatgpt-telegram-bot
 ```
