@@ -186,7 +186,7 @@ func (bot *MyBot) response(update tgbotapi.Update) error {
 					Name:  uuid.NewUUID(),
 					Bytes: speech,
 				}
-				if err := bot.send(tgbotapi.NewAudio(update.Message.Chat.ID, inputFile)); err != nil {
+				if err := bot.send(tgbotapi.NewVoice(update.Message.Chat.ID, inputFile)); err != nil {
 					return err
 				}
 			}
