@@ -1,16 +1,14 @@
 package main
 
 import (
-	tts "cloud.google.com/go/texttospeech/apiv1"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/caarlos0/env/v7"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/leafduo/chatgpt-telegram-bot/tts"
 	"github.com/sashabaranov/go-openai"
 	"github.com/u2takey/go-utils/uuid"
-	"google.golang.org/api/option"
 	"log"
 	"os"
 	"time"
@@ -18,28 +16,13 @@ import (
 
 type MyBot struct {
 	*tgbotapi.BotAPI
-	ttsCLi    *tts.Client
+	ttsCLi    tts.Client
 	openaiCli *openai.Client
 
 	users map[int64]*User
 }
 
-var cfg struct {
-	TelegramAPIToken                    string  `env:"TELEGRAM_APITOKEN,required"`
-	OpenAIAPIKey                        string  `env:"OPENAI_API_KEY,required"`
-	ModelTemperature                    float32 `env:"MODEL_TEMPERATURE" envDefault:"1.0"`
-	AllowedTelegramID                   []int64 `env:"ALLOWED_TELEGRAM_ID" envSeparator:","`
-	ConversationIdleTimeoutSeconds      int     `env:"CONVERSATION_IDLE_TIMEOUT_SECONDS" envDefault:"86400"`
-	NotifyUserOnConversationIdleTimeout bool    `env:"NOTIFY_USER_ON_CONVERSATION_IDLE_TIMEOUT" envDefault:"true"`
-	GoogleTTSCertFile                   string  `env:"GOOGLE_TTS_Cert_File,required"`
-}
-
-func NewMyBot() (*MyBot, error) {
-	if err := env.Parse(&cfg); err != nil {
-		fmt.Printf("%+v\n", err)
-		return nil, err
-	}
-
+func NewMyBot(tts tts.Client) (*MyBot, error) {
 	bot, err := tgbotapi.NewBotAPI(cfg.TelegramAPIToken)
 	if err != nil {
 		return nil, err
@@ -49,18 +32,13 @@ func NewMyBot() (*MyBot, error) {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	ttsCli, err := tts.NewClient(context.Background(), option.WithCredentialsFile(cfg.GoogleTTSCertFile))
-	if err != nil {
-		return nil, err
-	}
-
 	openaiCli := openai.NewClient(cfg.OpenAIAPIKey)
 	if err != nil {
 		return nil, err
 	}
 	return &MyBot{
 		BotAPI:    bot,
-		ttsCLi:    ttsCli,
+		ttsCLi:    tts,
 		openaiCli: openaiCli,
 		users:     map[int64]*User{},
 	}, nil
@@ -177,7 +155,7 @@ func (bot *MyBot) response(update tgbotapi.Update) error {
 					log.Print(err)
 				}
 			} else {
-				speech, err := t2s(bot.ttsCLi, answerText)
+				speech, _, err := bot.ttsCLi.T2S(answerText)
 				if err != nil {
 					return err
 				}
@@ -278,3 +256,9 @@ func (bot *MyBot) handleUserPrompt(userID int64, msg string) (string, bool, erro
 
 	return answer.Content, contextTrimmed, nil
 }
+
+//CGO_CFLAGS="-I/Users/reiw/Downloads/microsoft.cognitiveservices.speech.1.28.0/build/native/include/c_api"
+//CGO_LDFLAGS="-L. -lMicrosoft.CognitiveServices.Speech.core"
+//CGO_ENABLED=1
+//GOARCH=amd64
+//go build -ldflags "-s -w -r=."

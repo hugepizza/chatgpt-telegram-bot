@@ -11,6 +11,8 @@ cloud.google.com/go/longrunning v0.4.1/go.mod h1:4iWDqhBZ70CvZ6BfETbvam3T8FMvLK+
 cloud.google.com/go/texttospeech v1.6.2 h1:NXozk2+arVWiAOrwiMo0lXkYs6zou9MByMpyMlB2ip4=
 cloud.google.com/go/texttospeech v1.6.2/go.mod h1:VSP5kS2iI1b+JsptxouTYN7q8KNPU+fTWN5ocakkq98=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/Microsoft/cognitive-services-speech-sdk-go v1.28.0 h1:RRsHtN0olJt2g2Q+avDLzLxIxq2WqypSavoZWIgMTo8=
+github.com/Microsoft/cognitive-services-speech-sdk-go v1.28.0/go.mod h1:ct4bG95K1Lu/c5y60PVGI1XOjo9aAcl80DD5dvu6zsg=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/aws/aws-sdk-go v1.38.20 h1:QbzNx/tdfATbdKfubBpkt84OM6oBkxQZRw6+bW2GyeA=
 github.com/aws/aws-sdk-go v1.38.20/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=

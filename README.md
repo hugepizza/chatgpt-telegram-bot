@@ -2,9 +2,9 @@
 
 Run your own ChatGPT Telegram bot!
 
-Support voice message and return voice message (by google tts).
+Support voice message and return voice message (by google/azure tts).
 
-chatGPT的Telegram机器人支持文字输入返回文字，语音输入返回语音，目前由谷歌文字转语音实现，需要ffmpeg。
+chatGPT的Telegram机器人支持文字输入返回文字，语音输入返回语音，目前有调用google和azure的实现，需要ffmpeg用于将tg的oga音频转为mp3。
 
 
 ## Setup
@@ -30,6 +30,10 @@ export TELEGRAM_APITOKEN=<your_telegram_bot_token>
 export ALLOWED_TELEGRAM_ID=<your_telegram_id>,<your_friend_telegram_id>
 
 export GOOGLE_TTS_Cert_File=<your_google_tts_cert_file_path>
+
+# if you are going to use azure tts
+# export Azure_TTS_Key=<azure_tts_key> 
+# export Azure_TTS_Region=<azure_tts_region>
 
 chatgpt-telegram-bot
 ```

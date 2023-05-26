@@ -14,6 +14,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/longrunning v0.4.1 // indirect
 	cloud.google.com/go/texttospeech v1.6.2 // indirect
+	github.com/Microsoft/cognitive-services-speech-sdk-go v1.28.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.20 // indirect
 	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
