@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
 )
 
 func downloadFile(url string) (*os.File, error) {
@@ -31,7 +32,9 @@ func downloadFile(url string) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-	mp3Name := fmt.Sprintf("%s.mp3", uuid.NewUUID())
+
+	os.TempDir()
+	mp3Name := path.Join(os.TempDir(), fmt.Sprintf("/%s.mp3", uuid.NewUUID()))
 	if err := ffmpeg.Input(file.Name()).Output(mp3Name).OverWriteOutput().Run(); err != nil {
 		return nil, err
 	}
