@@ -1,4 +1,4 @@
-module github.com/leafduo/chatgpt-telegram-bot
+module github.com/hugepizza/chatgpt-telegram-bot
 
 go 1.20
 

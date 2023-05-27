@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/leafduo/chatgpt-telegram-bot/tts"
+	"github.com/hugepizza/chatgpt-telegram-bot/tts"
 	"github.com/sashabaranov/go-openai"
 	"github.com/u2takey/go-utils/uuid"
 	"log"

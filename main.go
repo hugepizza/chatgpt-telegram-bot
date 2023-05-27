@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/caarlos0/env/v7"
-	ttsp "github.com/leafduo/chatgpt-telegram-bot/tts"
+	ttsp "github.com/hugepizza/chatgpt-telegram-bot/tts"
 )
 
 var cfg struct {
