@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	mp3 "github.com/hajimehoshi/go-mp3"
 	openai "github.com/sashabaranov/go-openai"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/u2takey/go-utils/uuid"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"path"
@@ -59,4 +62,13 @@ func a2t(bot *tgbotapi.BotAPI, openaiCli *openai.Client, fileId string) (string,
 		return "", false, err
 	}
 	return resp.Text, true, err
+}
+
+func GetAudioDuration(data []byte) (int, error) {
+	d, err := mp3.NewDecoder(bytes.NewReader(data))
+	if err != nil {
+		return 0, err
+	}
+	samples := d.Length() / 4 // simpleSize = 4
+	return int(math.Ceil(float64(samples) / float64(d.SampleRate()))), nil
 }

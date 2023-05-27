@@ -16,6 +16,8 @@ require (
 	cloud.google.com/go/texttospeech v1.6.2 // indirect
 	github.com/Microsoft/cognitive-services-speech-sdk-go v1.28.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.20 // indirect
+	github.com/dhowden/tag v0.0.0-20220618230019-adf36e896086 // indirect
+	github.com/djimenez/iconv-go v0.0.0-20160305225143-8960e66bd3da // indirect
 	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -24,7 +26,9 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
+	github.com/hajimehoshi/go-mp3 v0.3.4 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/mikkyang/id3-go v0.0.0-20191012064224-2c6ab3bb1fbd // indirect
 	github.com/sashabaranov/go-openai v1.9.4 // indirect
 	github.com/u2takey/ffmpeg-go v0.4.1 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
