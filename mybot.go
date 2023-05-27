@@ -166,6 +166,7 @@ func (bot *MyBot) response(update tgbotapi.Update) error {
 				if err := bot.send(tgbotapi.NewVoice(update.Message.Chat.ID, inputFile)); err != nil {
 					return err
 				}
+				_ = bot.send(tgbotapi.NewMessage(update.Message.Chat.ID, answerText))
 			}
 
 			if contextTrimmed {
